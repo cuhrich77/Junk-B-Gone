@@ -30,32 +30,43 @@ export default function Navbar() {
   return (
     <nav style={{...navStyle, boxShadow: scrolled ? '0 4px 20px rgba(0,0,0,.08)' : 'none'}}>
       <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 24px',height:72,maxWidth:1160,margin:'0 auto'}}>
-        
 
-<Link to="/" style={{display:'flex',alignItems:'center'}}>
-  <img 
-    src="/jokersjunklogo.jpg" 
-    alt="Jokers Junk Removal" 
-    style={{height:'64px', width:'auto'}}
-  />
-</Link>    
-    
+        <Link to="/" style={{display:'flex',alignItems:'center'}}>
+          <img
+            src="/jokersjunklogo.jpg"
+            alt="Jokers Junk Removal"
+            style={{height:'64px', width:'auto'}}
+            onError={(e) => {
+              e.target.style.display='none';
+              e.target.nextSibling.style.display='flex';
+            }}
+          />
+          <span style={{display:'none',fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.6rem',fontWeight:900,color:'#1a1a1a'}}>
+            JOKERS <span style={{color:'#2d7a3a'}}>JUNK</span> REMOVAL
+          </span>
+        </Link>
+
         <div style={{display:'flex',alignItems:'center',gap:28}} className="nav-links-desktop">
           {LINKS.map(l => (
             <Link key={l.path} to={l.path} style={{
               fontWeight: location.pathname === l.path ? 600 : 500,
               fontSize: '.95rem',
-              color: location.pathname === l.path ? '#ff6a00' : '#555',
+              color: location.pathname === l.path ? '#2d7a3a' : '#555',
               transition: 'color .2s'
             }}>{l.label}</Link>
           ))}
         </div>
 
         <div style={{display:'flex',alignItems:'center',gap:14}} className="nav-cta-desktop">
-          <a href="tel:9043341521" style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.1rem',fontWeight:700,color:'#ff6a00',display:'flex',alignItems:'center',gap:6}}>
+          <a href="tel:9043341521" style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.1rem',fontWeight:700,color:'#2d7a3a',display:'flex',alignItems:'center',gap:6}}>
             📞 (904) 334-1521
           </a>
-          <Link to="/contact" className="btn btn-primary" style={{padding:'12px 24px',fontSiz        <button onClick={() => setMenuOpen(o => !o)} style={{display:'none',border:'none',fontSize:'1.6rem',cursor:'pointer'}} className="hamburger">
+          <Link to="/contact" className="btn btn-primary" style={{padding:'12px 24px',fontSize:'1rem',background:'#2d7a3a'}}>
+            Free Quote
+          </Link>
+        </div>
+
+        <button onClick={() => setMenuOpen(o => !o)} style={{display:'none',background:'none',border:'none',fontSize:'1.6rem',cursor:'pointer'}} className="hamburger">
           {menuOpen ? '✕' : '☰'}
         </button>
       </div>
@@ -63,12 +74,12 @@ export default function Navbar() {
       {menuOpen && (
         <div style={{background:'#fff',borderTop:'1px solid #e8e8e8',padding:'16px 24px 20px',display:'flex',flexDirection:'column',gap:4}}>
           {LINKS.map(l => (
-            <Link key={l.path} to={l.path} style={{padding:'12px 0',fontSize:'1.1rem',fontWeight:500,color: location.pathname===l.path?'#ff6a00':'#555',borderBottom:'1px solid #e8e8e8'}}>
+            <Link key={l.path} to={l.path} style={{padding:'12px 0',fontSize:'1.1rem',fontWeight:500,color:location.pathname===l.path?'#2d7a3a':'#555',borderBottom:'1px solid #e8e8e8'}}>
               {l.label}
             </Link>
           ))}
-          <Link to="/contact" className="btn btn-primary" style={{marginTop:8,justifyContent:'center'}}>📦 Get Free Quote</Link>
-          <a href="tel:9043341521" style={{textAlign:'center',fontWeight:600,color:'#ff6a00',padding:'8px 0'}}>📞 (904) 334-1521</a>
+          <Link to="/contact" className="btn btn-primary" style={{marginTop:8,justifyContent:'center',background:'#2d7a3a'}}>📦 Get Free Quote</Link>
+          <a href="tel:9043341521" style={{textAlign:'center',fontWeight:600,color:'#2d7a3a',padding:'8px 0'}}>📞 (904) 334-1521</a>
         </div>
       )}
 
