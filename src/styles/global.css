@@ -1,9 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap');
 
 :root {
-  --orange: #ff6a00;
-  --orange-dk: #e05500;
-  --orange-lt: #fff4ed;
+  :root {
+  --orange:    #2d7a3a;
+  --orange-dk: #1a5226;
+  --orange-lt: #f0f9f2;
   --dark: #1a1a1a;
   --mid: #555;
   --light: #f8f8f8;
