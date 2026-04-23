@@ -126,7 +126,7 @@ export default function Home() {
 
       {/* CTA */}
       <div className="cta-banner">
-        <h2>Ready to Get That <span>Junk B Gone?</span></h2>
+        <h2>Ready to Get That <span>Jokers Junk Removal?</span></h2>
         <p>Same-day service available. Free quote in 60 seconds.</p>
         <div className="cta-actions">
           <Link to="/contact" className="btn btn-primary">📦 Book Now — It's Free</Link>
