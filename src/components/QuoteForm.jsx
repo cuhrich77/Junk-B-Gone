@@ -16,13 +16,100 @@ const TIME_SLOTS = [
 const today = new Date();
 today.setHours(0,0,0,0);
 
-d.setDate(d.getDate() + 
-
 const green = '#2d7a3a';
 const purple = '#7b2d8b';
 const greenLt = '#f0f9f2';
 const purpleLt = '#f9f0fb';
+function CalendarPicker({ selected, onSelect, today, green, greenLt }) {
+  const [viewDate, setViewDate] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
 
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  const monthName = viewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const prevMonth = () => setViewDate(new Date(year, month - 1, 1));
+  const nextMonth = () => setViewDate(new Date(year, month + 1, 1));
+
+  const days = [];
+  for (let i = 0; i < firstDay; i++) days.push(null);
+  for (let i = 1; i <= daysInMonth; i++) days.push(i);
+
+  const WEEKDAYS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+  return (
+    <div style={{border:'2px solid #e8e8e8',borderRadius:16,overflow:'hidden'}}>
+      {/* Month nav */}
+      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'14px 16px',background:'#f8f8f8',borderBottom:'1px solid #e8e8e8'}}>
+        <button onClick={prevMonth} style={{background:'none',border:'none',fontSize:'1.4rem',cursor:'pointer',color:'#555',padding:'4px 10px'}}>‹</button>
+        <div style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.2rem',fontWeight:700}}>{monthName}</div>
+        <button onClick={nextMonth} style={{background:'none',border:'none',fontSize:'1.4rem',cursor:'pointer',color:'#555',padding:'4px 10px'}}>›</button>
+      </div>
+
+      {/* Weekday headers */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',background:'#f8f8f8',borderBottom:'1px solid #e8e8e8'}}>
+        {WEEKDAYS.map(d=>(
+          <div key={d} style={{textAlign:'center',padding:'8px 0',fontSize:'.75rem',fontWeight:700,color:'#999'}}>{d}</div>
+        ))}
+      </div>
+
+      {/* Days grid */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:2,padding:8,background:'#fff'}}>
+        {days.map((day, i) => {
+          if (!day) return <div key={`e${i}`}/>;
+          const thisDate = new Date(year, month, day);
+          thisDate.setHours(0,0,0,0);
+          const isPast = thisDate < today;
+          const isToday = thisDate.getTime() === today.getTime();
+          const isTomorrow = thisDate.getTime() === today.getTime() + 86400000;
+          const fullStr = thisDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+          const isSelected = selected?.full === fullStr;
+
+          return (
+            <button
+              key={day}
+              onClick={() => !isPast && onSelect({
+                label: isToday ? 'Today' : isTomorrow ? 'Tomorrow' : thisDate.toLocaleDateString('en-US',{weekday:'short'}),
+                date: thisDate.toLocaleDateString('en-US',{month:'short',day:'numeric'}),
+                full: fullStr,
+                sameDay: isToday,
+              })}
+              disabled={isPast}
+              style={{
+                padding:'10px 4px',
+                borderRadius:10,
+                border: isSelected ? `2.5px solid ${green}` : '2px solid transparent',
+                background: isSelected ? greenLt : isToday ? '#f0f9f2' : 'transparent',
+                color: isPast ? '#ddd' : isSelected ? green : isToday ? green : '#1a1a1a',
+                fontFamily:'Barlow Condensed,sans-serif',
+                fontSize:'1rem',
+                fontWeight: isSelected || isToday ? 700 : 400,
+                cursor: isPast ? 'not-allowed' : 'pointer',
+                position:'relative',
+                transition:'all .15s',
+              }}
+            >
+              {day}
+              {isToday && (
+                <div style={{position:'absolute',bottom:3,left:'50%',transform:'translateX(-50%)',width:5,height:5,borderRadius:'50%',background:green}}/>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Selected date display */}
+      {selected && (
+        <div style={{padding:'10px 16px',background:greenLt,borderTop:'1px solid rgba(45,122,58,.15)',fontSize:'.88rem',fontWeight:600,color:green,textAlign:'center'}}>
+          📅 {selected.full}
+        </div>
+      )}
+    </div>
+  );
+}
 export default function QuoteForm({ compact = false }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -192,24 +279,12 @@ export default function QuoteForm({ compact = false }) {
           <h3 style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.6rem',marginBottom:4}}>Choose Appointment</h3>
           <p style={{color:'#999',fontSize:'.88rem',marginBottom:24}}>Select a date and arrival window</p>
 
-          {/* Day picker */}
-          <div style={{marginBottom:24}}>
-            <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:10}}>Select a Date</label>
-            <div style={{display:'flex',gap:8,overflowX:'auto',paddingBottom:4}}>
-              {DAYS.map((d,i)=>(
-                <button key={i} onClick={()=>set('day',d)} style={{
-                  minWidth:72,padding:'12px 8px',borderRadius:12,cursor:'pointer',textAlign:'center',
-                  border:`2.5px solid ${form.day?.date===d.date?green:'#e8e8e8'}`,
-                  background:form.day?.date===d.date?greenLt:'#fff',
-                  transition:'all .2s', flexShrink:0,
-                }}>
-                  {d.sameDay && <div style={{fontSize:'.65rem',fontWeight:700,color:'#fff',background:green,borderRadius:6,padding:'2px 6px',marginBottom:4}}>TODAY</div>}
-                  <div style={{fontSize:'.78rem',fontWeight:700,color:form.day?.date===d.date?green:'#999'}}>{d.label}</div>
-                  <div style={{fontSize:'.85rem',fontWeight:700,color:form.day?.date===d.date?green:'#1a1a1a'}}>{d.date}</div>
-                </button>
-              ))}
-            </div>
-          </div>
+        {/* Full Calendar */}
+<div style={{marginBottom:24}}>
+  <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:10}}>Select a Date</label>
+  <CalendarPicker selected={form.day} onSelect={d=>set('day',d)} today={today} green={green} greenLt={greenLt}/>
+</div>  
+          
 
           {/* Time slot */}
           <div style={{marginBottom:24}}>
