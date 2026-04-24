@@ -42,7 +42,7 @@ export default function Home() {
       </section>
 
       {/* STATS */}
-      <div style={{background:'#2d7a3a',padding:'32px 24px'}}>
+      <div style={{ background:'linear-gradient(135deg,#2d7a3a,#7b2d8b)', padding:'32px 24px'}}>
         <div className="container" style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:24}}>
           {STATS.map(s=>(
             <div key={s.lbl} style={{textAlign:'center',color:'#fff'}}>
@@ -126,7 +126,7 @@ export default function Home() {
 
       {/* CTA */}
       <div className="cta-banner">
-        <h2>Ready to Get That <span>Jokers Junk Removal?</span></h2>
+        <h2>Ready to Get That <span>Junk Removal?</span></h2>
         <p>Same-day service available. Free quote in 60 seconds.</p>
         <div className="cta-actions">
           <Link to="/contact" className="btn btn-primary">📦 Book Now — It's Free</Link>
