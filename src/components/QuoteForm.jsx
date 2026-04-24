@@ -13,18 +13,10 @@ const TIME_SLOTS = [
   { id:'afternoon', label:'Afternoon', time:'12pm – 4pm',  icon:'☀️' },
   { id:'evening',   label:'Evening',   time:'4pm – 7pm',   icon:'🌆' },
 ];
+const today = new Date();
+today.setHours(0,0,0,0);
 
-const DAYS = [];
-for (let i = 0; i < 7; i++) {
-  const d = new Date();
-  d.setDate(d.getDate() + i);
-  DAYS.push({
-    label: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : d.toLocaleDateString('en-US',{weekday:'short'}),
-    date: d.toLocaleDateString('en-US',{month:'short',day:'numeric'}),
-    full: d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}),
-    sameDay: i === 0,
-  });
-}
+d.setDate(d.getDate() + 
 
 const green = '#2d7a3a';
 const purple = '#7b2d8b';
