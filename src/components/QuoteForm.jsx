@@ -20,8 +20,144 @@ const green = '#2d7a3a';
 const purple = '#7b2d8b';
 const greenLt = '#f0f9f2';
 const purpleLt = '#f9f0fb';
+
 function AddressAutocomplete({ value, onChange, green, greenLt }) {
   const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const debounceRef = React.useRef(null);
+
+  const fetchSuggestions = async (input) => {
+    if (input.length < 3) { setSuggestions([]); return; }
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/places?input=${encodeURIComponent(input)}`);
+      const data = await res.json();
+      setSuggestions(data.predictions || []);
+      setShowSuggestions(true);
+    } catch {
+      setSuggestions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    const val = e.target.value;
+    onChange(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(val), 300);
+  };
+
+  const handleSelect = (desc) => {
+    onChange(desc);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
+  return (
+    <div style={{position:'relative'}}>
+      <input
+        value={value}
+        onChange={handleChange}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+        placeholder="Start typing your address..."
+        style={{
+          width:'100%',padding:'12px 14px',
+          border:`2px solid ${value ? green : '#e8e8e8'}`,
+          borderRadius:10,fontSize:'.95rem',outline:'none',
+          transition:'border .2s'
+        }}
+      />
+      {loading && (
+        <div style={{position:'absolute',right:12,top:14,fontSize:'.85rem',color:'#999'}}>🔍</div>
+      )}
+      {showSuggestions && suggestions.length > 0 && (
+        <div style={{
+          position:'absolute',top:'100%',left:0,right:0,
+          background:'#fff',border:'2px solid #e8e8e8',
+          borderRadius:10,boxShadow:'0 8px 24px rgba(0,0,0,.12)',
+          zIndex:100,marginTop:4,overflow:'hidden'
+        }}>
+          {suggestions.map((s,i) => (
+            <div
+              key={i}
+              onMouseDown={() => handleSelect(s.description)}
+              style={{
+                padding:'12px 16px',cursor:'pointer',
+                borderBottom:i<suggestions.length-1?'1px solid #f0f0f0':'none',
+                fontSize:'.9rem',display:'flex',alignItems:'center',gap:8,
+                background:'#fff',transition:'background .15s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = greenLt}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              📍 {s.description}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+  const handleChange = (e) => {
+    const val = e.target.value;
+    onChange(val);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => fetchSuggestions(val), 300);
+  };
+
+  const handleSelect = (desc) => {
+    onChange(desc);
+    setSuggestions([]);
+    setShowSuggestions(false);
+  };
+
+  return (
+    <div style={{position:'relative'}}>
+      <input
+        value={value}
+        onChange={handleChange}
+        onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+        placeholder="Start typing your address..."
+        style={{
+          width:'100%',padding:'12px 14px',
+          border:`2px solid ${value ? green : '#e8e8e8'}`,
+          borderRadius:10,fontSize:'.95rem',outline:'none',
+          transition:'border .2s'
+        }}
+      />
+      {loading && (
+        <div style={{position:'absolute',right:12,top:14,fontSize:'.85rem',color:'#999'}}>🔍</div>
+      )}
+      {showSuggestions && suggestions.length > 0 && (
+        <div style={{
+          position:'absolute',top:'100%',left:0,right:0,
+          background:'#fff',border:'2px solid #e8e8e8',
+          borderRadius:10,boxShadow:'0 8px 24px rgba(0,0,0,.12)',
+          zIndex:100,marginTop:4,overflow:'hidden'
+        }}>
+          {suggestions.map((s,i) => (
+            <div
+              key={i}
+              onMouseDown={() => handleSelect(s.description)}
+              style={{
+                padding:'12px 16px',cursor:'pointer',
+                borderBottom:i<suggestions.length-1?'1px solid #f0f0f0':'none',
+                fontSize:'.9rem',display:'flex',alignItems:'center',gap:8,
+                background:'#fff',transition:'background .15s'
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = greenLt}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              📍 {s.description}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+} [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
 
