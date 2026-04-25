@@ -247,6 +247,188 @@ export default function QuoteForm({ compact = false }) {
       </p>
       <div style={{background:greenLt,borderRadius:16,padding:20,margin:'20px 0',border:`1.5px solid rgba(45,122,58,.2)`}}>
         <div style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.1rem',fontWeight:700,color:green,marginBottom:4}}>Your Appointment</d
+
 </div>
   );
-      }
+
+  const btnStyle = (active) => ({
+    width:'100%', padding:16,
+    background: active ? green : '#e8e8e8',
+    color: active ? '#fff' : '#999',
+    border:'none', borderRadius:50,
+    fontFamily:'Barlow Condensed,sans-serif',
+    fontSize:'1.2rem', fontWeight:700,
+    cursor: active ? 'pointer' : 'not-allowed',
+    transition:'all .2s',
+  });
+
+  const backBtn = {
+    flex:1, padding:16, background:'#fff', color:'#555',
+    border:'2px solid #e8e8e8', borderRadius:50,
+    fontFamily:'Barlow Condensed,sans-serif',
+    fontSize:'1.1rem', fontWeight:700, cursor:'pointer',
+  };
+
+  return (
+    <div style={{background:'#fff',borderRadius:24,padding:compact?24:40,boxShadow:compact?'none':'0 12px 48px rgba(0,0,0,0.12)',border:compact?'none':'1px solid #e8e8e8',maxWidth:560,width:'100%'}}>
+
+      {/* PROGRESS BAR */}
+      <div style={{marginBottom:28}}>
+        <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}>
+          {['Check Availability','Choose Time','Your Info'].map((s,i) => (
+            <div key={s} style={{display:'flex',flexDirection:'column',alignItems:'center',flex:1}}>
+              <div style={{
+                width:36,height:36,borderRadius:'50%',
+                background: step > i+1 ? green : step === i+1 ? green : '#e8e8e8',
+                color: step >= i+1 ? '#fff' : '#999',
+                display:'flex',alignItems:'center',justifyContent:'center',
+                fontFamily:'Barlow Condensed,sans-serif',fontWeight:900,fontSize:'1.1rem',
+                marginBottom:6,transition:'all .3s',
+                boxShadow: step === i+1 ? `0 4px 12px rgba(45,122,58,.4)` : 'none',
+              }}>{step > i+1 ? '✓' : i+1}</div>
+              <div style={{fontSize:'.72rem',fontWeight:600,color:step===i+1?green:'#999',textAlign:'center',lineHeight:1.2}}>{s}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{height:4,background:'#e8e8e8',borderRadius:4,margin:'0 18px',position:'relative',top:-28}}>
+          <div style={{height:'100%',background:green,borderRadius:4,width:`${((step-1)/2)*100}%`,transition:'width .4s ease'}}/>
+        </div>
+      </div>
+
+      {/* STEP 1 */}
+      {step === 1 && (
+        <div>
+          <h3 style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.6rem',marginBottom:4}}>Check Availability</h3>
+          <p style={{color:'#999',fontSize:'.88rem',marginBottom:24}}>Enter your ZIP code to get started</p>
+          <div style={{display:'flex',gap:12,marginBottom:24}}>
+            {['Home','Business'].map(t => (
+              <button key={t} onClick={() => set('type',t)} style={{
+                flex:1,padding:14,borderRadius:12,cursor:'pointer',
+                border:`2.5px solid ${form.type===t?(t==='Home'?green:purple):'#e8e8e8'}`,
+                background:form.type===t?(t==='Home'?greenLt:purpleLt):'#fff',
+                fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.2rem',fontWeight:700,
+                color:form.type===t?(t==='Home'?green:purple):'#999',transition:'all .2s',
+              }}>{t==='Home'?'🏠':'🏢'} {t}</button>
+            ))}
+          </div>
+          <div style={{marginBottom:20}}>
+            <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:6}}>ZIP Code <span style={{color:green}}>*</span></label>
+            <input type="number" placeholder="32084" value={form.zip} onChange={e=>set('zip',e.target.value)}
+              style={{width:'100%',padding:'14px 16px',border:`2px solid ${form.zip.length>=5?green:'#e8e8e8'}`,borderRadius:12,fontSize:'1.1rem',fontFamily:'Barlow Condensed,sans-serif',fontWeight:700,letterSpacing:4,outline:'none',transition:'border .2s'}}/>
+            {form.zip.length>=5 && <div style={{color:green,fontSize:'.85rem',fontWeight:600,marginTop:6}}>✅ We serve your area!</div>}
+          </div>
+          <div style={{marginBottom:24}}>
+            <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:10}}>What do you need hauled? <span style={{color:green}}>*</span></label>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {SERVICES.map(s => (
+                <button key={s} onClick={()=>set('service',s)} style={{
+                  padding:'10px 12px',borderRadius:10,cursor:'pointer',textAlign:'left',
+                  border:`2px solid ${form.service===s?green:'#e8e8e8'}`,
+                  background:form.service===s?greenLt:'#fff',
+                  fontSize:'.82rem',fontWeight:form.service===s?700:400,
+                  color:form.service===s?green:'#555',transition:'all .2s',
+                }}>{s}</button>
+              ))}
+            </div>
+          </div>
+          <button onClick={()=>setStep(2)} disabled={!canNext1} style={btnStyle(canNext1)}>
+            Next: Choose Your Time →
+          </button>
+        </div>
+      )}
+
+      {/* STEP 2 */}
+      {step === 2 && (
+        <div>
+          <h3 style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.6rem',marginBottom:4}}>Choose Appointment</h3>
+          <p style={{color:'#999',fontSize:'.88rem',marginBottom:24}}>Select a date and arrival window</p>
+          <div style={{marginBottom:24}}>
+            <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:10}}>Select a Date</label>
+            <CalendarPicker selected={form.day} onSelect={d=>set('day',d)}/>
+          </div>
+          <div style={{marginBottom:24}}>
+            <label style={{display:'block',fontSize:'.85rem',fontWeight:600,marginBottom:10}}>Select Arrival Window</label>
+            <div style={{display:'flex',flexDirection:'column',gap:10}}>
+              {TIME_SLOTS.map(t => (
+                <button key={t.id} onClick={()=>set('timeSlot',t.id)} style={{
+                  padding:'16px 20px',borderRadius:14,cursor:'pointer',
+                  border:`2.5px solid ${form.timeSlot===t.id?green:'#e8e8e8'}`,
+                  background:form.timeSlot===t.id?greenLt:'#fff',
+                  display:'flex',alignItems:'center',gap:16,transition:'all .2s',
+                }}>
+                  <span style={{fontSize:'1.8rem'}}>{t.icon}</span>
+                  <div style={{textAlign:'left'}}>
+                    <div style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.15rem',fontWeight:700,color:form.timeSlot===t.id?green:'#1a1a1a'}}>{t.label}</div>
+                    <div style={{fontSize:'.85rem',color:'#999'}}>{t.time}</div>
+                  </div>
+                  {form.timeSlot===t.id && <span style={{marginLeft:'auto',color:green,fontSize:'1.4rem'}}>✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={{display:'flex',gap:12}}>
+            <button onClick={()=>setStep(1)} style={backBtn}>← Back</button>
+            <button onClick={()=>setStep(3)} disabled={!canNext2} style={{...btnStyle(canNext2),flex:2}}>Next: Your Info →</button>
+          </div>
+        </div>
+      )}
+
+      {/* STEP 3 */}
+      {step === 3 && (
+        <div>
+          <h3 style={{fontFamily:'Barlow Condensed,sans-serif',fontSize:'1.6rem',marginBottom:4}}>Your Information</h3>
+          <p style={{color:'#999',fontSize:'.88rem',marginBottom:20}}>Almost done! We'll confirm your estimate appointment.</p>
+          <div style={{background:greenLt,borderRadius:14,padding:'14px 18px',marginBottom:20,border:`1.5px solid rgba(45,122,58,.2)`,display:'flex',gap:12,alignItems:'center'}}>
+            <span style={{fontSize:'1.6rem'}}>📅</span>
+            <div>
+              <div style={{fontWeight:700,fontSize:'.9rem',color:green}}>{form.day?.full}</div>
+              <div style={{fontSize:'.85rem',color:'#555'}}>{TIME_SLOTS.find(t=>t.id===form.timeSlot)?.icon} {TIME_SLOTS.find(t=>t.id===form.timeSlot)?.label} · {TIME_SLOTS.find(t=>t.id===form.timeSlot)?.time}</div>
+              <div style={{fontSize:'.82rem',color:'#999'}}>{form.service} · {form.type}</div>
+            </div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
+            <div>
+              <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>First Name <span style={{color:green}}>*</span></label>
+              <input value={form.firstName} onChange={e=>set('firstName',e.target.value)} placeholder="John"
+                style={{width:'100%',padding:'12px 14px',border:`2px solid ${form.firstName?green:'#e8e8e8'}`,borderRadius:10,fontSize:'.95rem',outline:'none',transition:'border .2s'}}/>
+            </div>
+            <div>
+              <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>Last Name</label>
+              <input value={form.lastName} onChange={e=>set('lastName',e.target.value)} placeholder="Smith"
+                style={{width:'100%',padding:'12px 14px',border:'2px solid #e8e8e8',borderRadius:10,fontSize:'.95rem',outline:'none'}}/>
+            </div>
+          </div>
+          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14,marginBottom:14}}>
+            <div>
+              <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>Phone <span style={{color:green}}>*</span></label>
+              <input value={form.phone} onChange={e=>set('phone',e.target.value)} placeholder="(904) 555-0100" type="tel"
+                style={{width:'100%',padding:'12px 14px',border:`2px solid ${form.phone?green:'#e8e8e8'}`,borderRadius:10,fontSize:'.95rem',outline:'none',transition:'border .2s'}}/>
+            </div>
+            <div>
+              <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>Email</label>
+              <input value={form.email} onChange={e=>set('email',e.target.value)} placeholder="john@email.com" type="email"
+                style={{width:'100%',padding:'12px 14px',border:'2px solid #e8e8e8',borderRadius:10,fontSize:'.95rem',outline:'none'}}/>
+            </div>
+          </div>
+          <div style={{marginBottom:14}}>
+            <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>Service Address <span style={{color:green}}>*</span></label>
+            <AddressAutocomplete value={form.address} onChange={v=>set('address',v)}/>
+          </div>
+          <div style={{marginBottom:20}}>
+            <label style={{display:'block',fontSize:'.82rem',fontWeight:600,marginBottom:5}}>Additional Notes (Optional)</label>
+            <textarea value={form.message} onChange={e=>set('message',e.target.value)}
+              placeholder="Describe what needs hauling, access notes, etc."
+              style={{width:'100%',padding:'12px 14px',border:'2px solid #e8e8e8',borderRadius:10,fontSize:'.95rem',outline:'none',height:80,resize:'none'}}/>
+          </div>
+          <div style={{display:'flex',gap:12}}>
+            <button onClick={()=>setStep(2)} style={backBtn}>← Back</button>
+            <button onClick={handleSubmit} disabled={!canSubmit||submitting} style={{...btnStyle(canSubmit&&!submitting),flex:2}}>
+              {submitting?'Booking...':'🚛 Book My Estimate →'}
+            </button>
+          </div>
+          <p style={{textAlign:'center',fontSize:'.78rem',color:'#aaa',marginTop:10}}>No credit card needed · Free estimate · Cancel anytime</p>
+        </div>
+      )}
+    </div>
+  );
+}
