@@ -3,23 +3,37 @@ export default async function handler(req, res) {
 
   const { input } = req.query;
 
-  if (!input || input.length < 3) {
+  if (!input || input.length < 2) {
     return res.status(400).json({ predictions: [] });
   }
+
   const apiKey = process.env.GOOGLE_MAPS_KEY;
 
   try {
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&types=address&components=country:us&key=${apiKey}&language=en`
+      'https://places.googleapis.com/v1/places:autocomplete',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Goog-Api-Key': apiKey,
+        },
+        body: JSON.stringify({
+          input: input,
+          includedRegionCodes: ['us'],
+        }),
+      }
     );
+
     const data = await response.json();
 
-    if (data.status === 'REQUEST_DENIED') {
-      console.error('Google API error:', data.error_message);
-      return res.status(200).json({ predictions: [] });
-    }
+    const predictions = (data.suggestions || []).map(s => ({
+      description: s.placePrediction?.text?.text || '',
+      place_id: s.placePrediction?.placeId || '',
+    }));
 
-    return res.status(200).json(data);
+    return res.status(200).json({ predictions });
+
   } catch (err) {
     console.error('Places API error:', err);
     return res.status(500).json({ predictions: [], error: 'Failed' });
