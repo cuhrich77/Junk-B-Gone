@@ -23,23 +23,17 @@ today.setHours(0,0,0,0);
 
 // ── ADDRESS AUTOCOMPLETE ──────────────────────────────────────
 function AddressAutocomplete({ value, onChange }) {
-  const [suggestions, setSuggestions]       = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [loading, setLoading]               = useState(false);
-  const debounceRef                         = React.useRef(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const debounceRef = React.useRef(null);
 
   const fetchSuggestions = async (input) => {
     if (input.length < 3) { setSuggestions([]); return; }
-    setLoading(true);
     try {
-      const res  = await fetch(`/api/places?input=${encodeURIComponent(input)}`);
+      const res = await fetch(`/api/places?input=${encodeURIComponent(input)}`);
       const data = await res.json();
       setSuggestions(data.predictions || []);
-      setShowSuggestions(true);
     } catch {
       setSuggestions([]);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -47,61 +41,32 @@ function AddressAutocomplete({ value, onChange }) {
     const val = e.target.value;
     onChange(val);
     clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => fetchSuggestions(val), 300);
+    debounceRef.current = setTimeout(() => fetchSuggestions(val), 400);
   };
 
-  const handleSelect = (desc) => {
-    onChange(desc);
-    setSuggestions([]);
-    setShowSuggestions(false);
-  };
-return (
-  <div style={{position:'relative'}}>
-    <input
-      value={value}
-      onChange={handleChange}
-      onBlur={() => setTimeout(() => setShowSuggestions(false), 300)}
-      onFocus={() => value.length >= 2 && setSuggestions(s => s)}
-      placeholder="Start typing your address..."
-      style={{
-        width:'100%', padding:'12px 14px',
-        border:`2px solid ${value ? green : '#e8e8e8'}`,
-        borderRadius:10, fontSize:'.95rem', outline:'none', transition:'border .2s'
-      }}
-    />
-    {loading && (
-      <div style={{position:'absolute',right:12,top:14,fontSize:'.85rem',color:'#999'}}>🔍</div>
-    )}
-    {showSuggestions && suggestions.length > 0 && (
-  <div style={{
-    position:'fixed',
-    left:'5%',right:'5%',bottom:'45%',
-    background:'#fff',border:'2px solid #e8e8e8',
-    borderRadius:14,boxShadow:'0 -8px 32px rgba(0,0,0,.2)',
-    zIndex:9999,overflow:'hidden',maxHeight:220,overflowY:'auto'
-  }}>
-        <div style={{padding:'10px 16px',background:green,color:'#fff',fontSize:'.8rem',fontWeight:700,letterSpacing:.5}}>
-          📍 SELECT YOUR ADDRESS
-        </div>
-        {suggestions.map((s,i) => (
-          <div
-            key={i}
-            onMouseDown={() => handleSelect(s.description)}
-            onTouchEnd={() => handleSelect(s.description)}
-            style={{
-              padding:'14px 16px', cursor:'pointer',
-              borderBottom: i < suggestions.length-1 ? '1px solid #f0f0f0' : 'none',
-              fontSize:'.9rem', display:'flex', alignItems:'center', gap:8,
-              background:'#fff'
-            }}
-          >
-            📍 {s.description}
-          </div>
+  return (
+    <div>
+      <input
+        list="address-suggestions"
+        value={value}
+        onChange={handleChange}
+        placeholder="Start typing your address..."
+        autoComplete="off"
+        style={{
+          width:'100%', padding:'12px 14px',
+          border:`2px solid ${value ? '#2d7a3a' : '#e8e8e8'}`,
+          borderRadius:10, fontSize:'.95rem', outline:'none',
+          transition:'border .2s'
+        }}
+      />
+      <datalist id="address-suggestions">
+        {suggestions.map((s, i) => (
+          <option key={i} value={s.description} />
         ))}
-      </div>
-    )}
-  </div>
-);
+      </datalist>
+    </div>
+  );
+}
   
 
 // ── CALENDAR PICKER ───────────────────────────────────────────
