@@ -73,19 +73,13 @@ return (
       <div style={{position:'absolute',right:12,top:14,fontSize:'.85rem',color:'#999'}}>🔍</div>
     )}
     {showSuggestions && suggestions.length > 0 && (
-      <div style={{
-        position:'fixed',
-        left:'5%', right:'5%',
-        bottom:'45%',
-        background:'#fff',
-        border:'2px solid #e8e8e8',
-        borderRadius:14,
-        boxShadow:'0 -8px 32px rgba(0,0,0,.2)',
-        zIndex:9999,
-        overflow:'hidden',
-        maxHeight:220,
-        overflowY:'auto'
-      }}>
+  <div style={{
+    position:'fixed',
+    left:'5%',right:'5%',bottom:'45%',
+    background:'#fff',border:'2px solid #e8e8e8',
+    borderRadius:14,boxShadow:'0 -8px 32px rgba(0,0,0,.2)',
+    zIndex:9999,overflow:'hidden',maxHeight:220,overflowY:'auto'
+  }}>
         <div style={{padding:'10px 16px',background:green,color:'#fff',fontSize:'.8rem',fontWeight:700,letterSpacing:.5}}>
           📍 SELECT YOUR ADDRESS
         </div>
